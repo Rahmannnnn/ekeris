@@ -1,0 +1,35 @@
+@use "../../assets/styles/globals.scss";
+@use "../../assets/styles/breakpoints.scss";
+
+.home {
+  padding: 0 1rem;
+  padding-bottom: 5rem;
+  width: 100%;
+  font-size: 1.4rem;
+
+  @include breakpoints.size(m) {
+    padding: 0 2rem;
+    padding-bottom: 5rem;
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  &__searchbar {
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__modal {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+}

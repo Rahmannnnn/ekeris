@@ -1,0 +1,20 @@
+.loader {
+  pointer-events: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--primary-30);
+  animation: loop 1s ease infinite;
+  margin: 0 auto;
+}
+
+@keyframes loop {
+  0% {
+    transform: rotate(0turn);
+  }
+
+  100% {
+    transform: rotate(1turn);
+  }
+}

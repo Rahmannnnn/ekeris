@@ -1,0 +1,43 @@
+@use "../../assets/styles/globals.scss";
+@use "../../assets/styles/breakpoints.scss";
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+
+  &__navbar {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    width: 100%;
+    padding: 1rem;
+    border-bottom: 1px solid black;
+    z-index: 9;
+    &__container {
+      padding: 0 1rem;
+      margin: 0 auto;
+      max-width: 1000px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    &__action {
+      padding: 1rem;
+      font-size: 1.2rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+  }
+
+  &__content {
+    width: 100%;
+    max-width: 1000px;
+  }
+}
