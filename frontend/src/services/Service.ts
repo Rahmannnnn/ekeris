@@ -1,7 +1,7 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
-class Service {
-  async get(url: string, params = {}, additionalHeader?: object) {
+export class Service {
+  static async get(url: string, params: object = {}, additionalHeader = {}) {
     try {
       const res = await axios.get(url, {
         params,
@@ -11,25 +11,43 @@ class Service {
         },
       });
 
-      const { data } = res;
-      const { status, message } = data;
-
-      switch (res.status) {
-        case 400:
-        case 401:
-        case 409:
-        case 500:
-          throw new Error(`${status}: ${message}`);
+      return {
+        error: false,
+        errorMessage: "",
+        response: res.data,
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const { response } = err;
+        return {
+          error: true,
+          errorMessage: response?.data.error || "",
+          response: "",
+        };
       }
 
-      return data;
-    } catch (error) {
-      const { response } = error as AxiosError;
-      throw response?.data;
+      if (err instanceof Error) {
+        const { message } = err;
+        return {
+          error: true,
+          errorMessage: message,
+          response: "",
+        };
+      }
+
+      return {
+        error: true,
+        errorMessage: "Error",
+        response: "",
+      };
     }
   }
 
-  async post(url: string, body: object = {}, additionalHeader?: object) {
+  static async post(
+    url: string,
+    body: object = {},
+    additionalHeader: object = {}
+  ) {
     try {
       const res = await axios.post(url, body, {
         headers: {
@@ -38,23 +56,170 @@ class Service {
         },
       });
 
-      const { data } = res;
-      const { status, message } = data;
-
-      switch (res.status) {
-        case 400:
-        case 401:
-        case 409:
-        case 500:
-          throw new Error(`${status}: ${message}`);
+      return {
+        error: false,
+        errorMessage: "",
+        response: res.data,
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const { response } = err;
+        return {
+          error: true,
+          errorMessage: response?.data.error || "",
+          response: "",
+        };
       }
 
-      return data;
-    } catch (error) {
-      const { response } = error as AxiosError;
-      throw response?.data;
+      if (err instanceof Error) {
+        const { message } = err;
+        return {
+          error: true,
+          errorMessage: message,
+          response: "",
+        };
+      }
+
+      return {
+        error: true,
+        errorMessage: err,
+        response: "",
+      };
+    }
+  }
+
+  static async delete(
+    url: string,
+    body: object = {},
+    additionalHeader: object = {}
+  ) {
+    try {
+      const res = await axios.delete(url, {
+        data: body,
+        headers: {
+          ...additionalHeader,
+        },
+      });
+
+      return {
+        error: false,
+        errorMessage: "",
+        response: res.data,
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const { response } = err;
+        return {
+          error: true,
+          errorMessage: response?.data.error || "",
+          response: "",
+        };
+      }
+
+      if (err instanceof Error) {
+        const { message } = err;
+        return {
+          error: true,
+          errorMessage: message,
+          response: "",
+        };
+      }
+
+      return {
+        error: true,
+        errorMessage: "",
+        response: "",
+      };
+    }
+  }
+
+  static async put(
+    url: string,
+    body: object = {},
+    additionalHeader: object = {}
+  ) {
+    try {
+      const res = await axios.put(url, body, {
+        headers: {
+          "content-type": "application/json",
+          ...additionalHeader,
+        },
+      });
+
+      return {
+        error: false,
+        errorMessage: "",
+        response: res.data,
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const { response } = err;
+        return {
+          error: true,
+          errorMessage: response?.data.error || "",
+          response: "",
+        };
+      }
+
+      if (err instanceof Error) {
+        const { message } = err;
+        return {
+          error: true,
+          errorMessage: message,
+          response: "",
+        };
+      }
+
+      return {
+        error: true,
+        errorMessage: "",
+        response: "",
+      };
+    }
+  }
+
+  static async patch(
+    url: string,
+    body: object = {},
+    additionalHeader: object = {}
+  ) {
+    try {
+      const res = await axios.patch(url, body, {
+        headers: {
+          "content-type": "application/json",
+          ...additionalHeader,
+        },
+      });
+
+      return {
+        error: false,
+        errorMessage: "",
+        response: res.data,
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const { response } = err;
+        return {
+          error: true,
+          errorMessage: response?.data.error || "",
+          response: "",
+        };
+      }
+
+      if (err instanceof Error) {
+        const { message } = err;
+        return {
+          error: true,
+          errorMessage: message,
+          response: "",
+        };
+      }
+
+      return {
+        error: true,
+        errorMessage: "",
+        response: "",
+      };
     }
   }
 }
-
-export const service = new Service();
