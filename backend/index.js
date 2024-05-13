@@ -206,6 +206,12 @@ app.put("/histories/:_id", (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
+app.options("/login", function (req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "*");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.end();
+});
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
