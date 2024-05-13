@@ -6,8 +6,15 @@ const RecordModel = require("./models/Records");
 const HistoryModel = require("./models/Histories");
 
 const app = express();
+app.use(
+  cors({
+    origin: ["https://ekeris-api.vercel.app"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-app.use(cors());
 
 mongoose.connect(
   "mongodb+srv://rahmannnnn:ghani123@ekeris.uv559ut.mongodb.net/ekeris?retryWrites=true&w=majority"
