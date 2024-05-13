@@ -13,6 +13,10 @@ mongoose.connect(
   "mongodb+srv://rahmannnnn:ghani123@ekeris.uv559ut.mongodb.net/ekeris"
 );
 
+app.get("/", (req, res) => {
+  res.json("Hello");
+});
+
 app.get("/records", (req, res) => {
   const { page, size, keyword } = req.query;
   let { searchby } = req.query;
