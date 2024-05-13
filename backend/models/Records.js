@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const RecordSchema = new mongoose.Schema({
   medical_record_number: String,
@@ -20,6 +21,8 @@ const RecordSchema = new mongoose.Schema({
     },
   ],
 });
+
+RecordSchema.plugin(mongoosePaginate);
 
 const RecordModel = mongoose.model("records", RecordSchema);
 module.exports = RecordModel;

@@ -90,8 +90,42 @@
   }
 
   &__delete,
-  &__add {
+  &__add,
+  &__upload {
     padding: 2rem 0;
+  }
+
+  &__upload {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    &__item {
+      p {
+        span {
+          font-weight: bold;
+          cursor: pointer;
+          color: globals.$green;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+      .desc {
+        &__item {
+          margin-bottom: 0.5rem;
+          margin-left: 4rem;
+          span {
+            background-color: rgba($color: globals.$green, $alpha: 0.5);
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            padding: 0 0.5rem;
+            border-radius: 0.5rem;
+          }
+        }
+      }
+    }
   }
 }
 

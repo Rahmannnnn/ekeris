@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 
 import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import "./index.scss";
 import { FaPlus } from "react-icons/fa6";
 import { AiOutlineEdit, AiOutlineUpload } from "react-icons/ai";
@@ -29,7 +30,7 @@ import { Record } from "../../interfaces/Record";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 
-type MODAL_TYPE = "DETAIL" | "ADD" | "DELETE" | "EDIT";
+type MODAL_TYPE = "DETAIL" | "ADD" | "DELETE" | "EDIT" | "UPLOAD";
 
 import type { TabsProps, UploadFile, UploadProps } from "antd";
 import { Upload } from "antd";
@@ -367,8 +368,6 @@ const Home = () => {
             arrRecords.push(result);
           });
 
-          console.log(arrRecords);
-          // TODO: Upload Data to Database
           const { error, errorMessage } = await RecordsClient.addBulkNewRecord(
             arrRecords
           );
@@ -703,7 +702,13 @@ const Home = () => {
       label: "Upload File",
       children: (
         <div className="upload">
-          <div className="upload__help">
+          <div
+            className="upload__help"
+            onClick={() => {
+              closeModal();
+              openModal("UPLOAD", INITIAL_RECORD);
+            }}
+          >
             <IoIosHelpCircleOutline size={"2rem"} />
             <p>Cara Penggunaan</p>
           </div>
@@ -1002,7 +1007,9 @@ const Home = () => {
   ];
 
   const [page, setPage] = useState(1);
-  const size = 10;
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  const [size, setSize] = useState(10);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -1018,6 +1025,10 @@ const Home = () => {
   }, []);
 
   const debounce = useDebounce(keyword, 500);
+
+  useEffect(() => {
+    setPage(1);
+  }, [size]);
 
   useEffect(() => {
     getAllRecords();
@@ -1040,15 +1051,14 @@ const Home = () => {
     }
 
     setLoading(true);
-    const { error, errorMessage, response } = await RecordsClient.getAllRecords(
-      params
-    );
+    const { error, response } = await RecordsClient.getAllRecords(params);
     setLoading(false);
 
     if (!error) {
-      if (response.length > 0) {
+      setTotalRecords(response.totalDocs);
+      if (response.docs.length > 0) {
         setRecords(
-          response.map((item: RecordResponse) => {
+          response.docs.map((item: RecordResponse) => {
             return {
               ...item,
               key: item._id,
@@ -1059,11 +1069,37 @@ const Home = () => {
         setRecords([]);
       }
     }
-
-    console.log(error, errorMessage, response);
   };
 
   const [api, contextHolder] = notification.useNotification();
+
+  const downloadExample = () => {
+    const data = [
+      [
+        "medical_record_number",
+        "name",
+        "health_insurance_number",
+        "rank",
+        "registration_number",
+        "unitary_part",
+        "health_service_provider",
+        "position",
+      ],
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const result = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    saveAs(result, "example.xlsx");
+  };
 
   return (
     <Layout>
@@ -1116,20 +1152,25 @@ const Home = () => {
           bordered
           sticky={true}
           pagination={{
-            pageSize: 10,
+            pageSize: size,
             current: page,
-            total: records.length,
-            showSizeChanger: false,
+            total: totalRecords,
+            showSizeChanger: true,
+            onShowSizeChange(_, size) {
+              setPage(1);
+              setSize(size);
+            },
             onChange(page) {
               setPage(page);
             },
           }}
           loading={loading}
-          scroll={{ x: 1500, y: "auto" }}
+          scroll={{ x: 1500, y: 500 }}
           columns={columns}
           dataSource={records}
         />
       </div>
+
       {modalType === "EDIT" && (
         <Modal
           title="UBAH DATA"
@@ -1154,6 +1195,7 @@ const Home = () => {
           </div>
         </Modal>
       )}
+
       {modalType === "DELETE" && (
         <Modal
           title="HAPUS"
@@ -1173,6 +1215,7 @@ const Home = () => {
           </div>
         </Modal>
       )}
+
       {modalType === "ADD" && (
         <Modal
           title="TAMBAH PASIEN BARU"
@@ -1184,7 +1227,11 @@ const Home = () => {
             </Button>,
             <Button
               key="add"
-              disabled={selectedRecord.medical_record_number === ""}
+              disabled={
+                (selectedTab === "1" &&
+                  selectedRecord.medical_record_number === "") ||
+                (selectedTab === "2" && !fileList.length)
+              }
               type="primary"
               onClick={submitAdd}
             >
@@ -1202,6 +1249,7 @@ const Home = () => {
           </div>
         </Modal>
       )}
+
       {modalType === "DETAIL" && (
         <Modal
           title="DETAIL"
@@ -1220,6 +1268,78 @@ const Home = () => {
               items={detailTabItems}
               onChange={changeSelectedTab}
             />
+          </div>
+        </Modal>
+      )}
+
+      {modalType === "UPLOAD" && (
+        <Modal
+          title="CARA UPLOAD FILE"
+          onCancel={() => {
+            closeModal();
+            openModal("ADD", INITIAL_RECORD);
+            setSelectedTab("2");
+          }}
+          open={showModal}
+          footer={[
+            <Button
+              key="save"
+              type="primary"
+              onClick={() => {
+                closeModal();
+                openModal("ADD", INITIAL_RECORD);
+                setSelectedTab("2");
+              }}
+            >
+              TUTUP
+            </Button>,
+          ]}
+        >
+          <div className="modal__upload">
+            <div className="modal__upload__item">
+              <p>
+                1. Unduh <span onClick={downloadExample}>template</span> file
+                excel (.xlsx)
+              </p>
+            </div>
+            <div className="modal__upload__item">
+              <p>2. Isi file template dengan keterangan sebagai berikut:</p>
+              <div className="desc">
+                <div className="desc__item">
+                  <span>medical_record_number</span> Nomor Rekam Medis
+                </div>
+                <div className="desc__item">
+                  <span>name</span> Nama Pasien
+                </div>
+                <div className="desc__item">
+                  <span>health_insurance_number</span> Nomor BPJS
+                </div>
+                <div className="desc__item">
+                  <span>rank</span> Pangkat
+                </div>
+                <div className="desc__item">
+                  <span>registration_number</span> NRP/NIP
+                </div>
+                <div className="desc__item">
+                  <span>unitary_part</span> Bagian Kesatuan
+                </div>
+                <div className="desc__item">
+                  <span>health_service_provider</span> PPK 1
+                </div>
+                <div className="desc__item">
+                  <span>position</span> Letak Lemari
+                </div>
+              </div>
+            </div>
+            <div className="modal__upload__item">
+              <p>3. Tekan atau seret file ke area yang telah disediakan.</p>
+            </div>
+            <div className="modal__upload__item">
+              <p>4. Pilih file yang ingin di unggah.</p>
+            </div>
+            <div className="modal__upload__item">
+              <p>5. Tekan Tombol "Tambah".</p>
+            </div>
           </div>
         </Modal>
       )}

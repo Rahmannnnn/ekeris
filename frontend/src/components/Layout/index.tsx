@@ -22,7 +22,7 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="layout">
       <div className="layout__navbar">
         <div className="layout__navbar__container">
-          <h1>E-KERIS</h1>
+          <h1>e-KERIS</h1>
           <div className="layout__navbar__action">
             <Button onClick={() => setShowModal(true)}>KELUAR</Button>
           </div>

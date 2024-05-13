@@ -26,9 +26,7 @@ app.get("/records", (req, res) => {
       .then((record) => {
         res.json(record);
       })
-      .catch((error) => {
-        return res.status(500).json({ error });
-      });
+      .catch((error) => res.json({ error: error }));
   }
 
   if (!page && !size && keyword) {
@@ -39,44 +37,32 @@ app.get("/records", (req, res) => {
       .then((record) => {
         res.json(record);
       })
-      .catch((error) => {
-        console.log(`caught the error: ${error}`);
-        return res.status(500).json({ error });
-      });
+      .catch((error) => res.json({ error: error }));
   }
 
   if (page && size && !keyword) {
     const offset = (page - 1) * size;
 
-    RecordModel.find()
-      .skip(offset)
-      .limit(size)
-      .populate("histories")
+    RecordModel.paginate({}, { offset, limit: size, populate: "histories" })
       .then((record) => {
         res.json(record);
       })
-      .catch((error) => {
-        console.log(`caught the error: ${error}`);
-        return res.status(500).json({ error });
-      });
+      .catch((error) => res.json({ error: error }));
   }
 
   if (page && size && keyword) {
     const offset = (page - 1) * size;
 
-    RecordModel.find({
-      [searchby]: { $regex: new RegExp("^" + keyword.toLowerCase(), "i") },
-    })
-      .skip(offset)
-      .limit(size)
-      .populate("histories")
+    RecordModel.paginate(
+      {
+        [searchby]: { $regex: new RegExp("^" + keyword.toLowerCase(), "i") },
+      },
+      { offset, limit: size, populate: "histories" }
+    )
       .then((record) => {
         res.json(record);
       })
-      .catch((error) => {
-        console.log(`caught the error: ${error}`);
-        return res.status(500).json({ error });
-      });
+      .catch((error) => res.json({ error: error }));
   }
 });
 
@@ -88,10 +74,7 @@ app.get("/records/:_id", (req, res) => {
     .then((record) => {
       res.json(record);
     })
-    .catch((error) => {
-      console.log(`caught the error: ${error}`);
-      return res.status(500).json({ error });
-    });
+    .catch((error) => res.json({ error: error }));
 });
 
 app.post("/records", async (req, res) => {
@@ -154,7 +137,6 @@ app.delete("/records/:_id", async (req, res) => {
   await RecordModel.findByIdAndDelete({ _id: _id })
     .then(async (result) => {
       const { histories } = result;
-      console.log(histories);
 
       await HistoryModel.deleteMany({ _id: histories });
       return res.json(result);

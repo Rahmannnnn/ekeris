@@ -10,6 +10,9 @@
   h1 {
     margin-bottom: 5rem;
     text-align: center;
+    font-size: 3rem;
+    color: globals.$green;
+    font-family: globals.$font-family-logo;
   }
 
   &__form {

@@ -54,8 +54,6 @@ const Auth = () => {
     if (error) {
       loginFailed(errorMessage, "top");
     }
-
-    console.log(error, errorMessage, response);
   };
 
   const getLoginData = () => {
