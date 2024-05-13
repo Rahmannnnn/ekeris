@@ -1,3 +1,5 @@
+import { HistoryResponse } from "./History";
+
 export interface Record {
   medical_record_number: string; // Nomor Rekam Medis
   name: string; // Nama
@@ -11,5 +13,5 @@ export interface Record {
   borrower: string; // Peminjam (if status false)
   createdAt: number;
   updatedAt: number;
-  histories: string[];
+  histories: HistoryResponse[];
 }

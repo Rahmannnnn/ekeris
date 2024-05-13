@@ -149,22 +149,17 @@ app.put("/records/:_id", async (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.delete("/records/:_id", (req, res) => {
+app.delete("/records/:_id", async (req, res) => {
   const { _id } = req.params;
-  RecordModel.findByIdAndDelete({ _id: _id })
+  await RecordModel.findByIdAndDelete({ _id: _id })
     .then(async (result) => {
+      const { histories } = result;
+      console.log(histories);
+
+      await HistoryModel.deleteMany({ _id: histories });
       return res.json(result);
     })
     .catch((error) => res.json({ error: error }));
-});
-
-app.get("/histories/:recordId", (req, res) => {
-  const { recordId } = req.params;
-  HistoryModel.find({
-    recordId,
-  })
-    .then((record) => res.json(record))
-    .catch((error) => res.json({ error }));
 });
 
 app.get("/histories", (req, res) => {

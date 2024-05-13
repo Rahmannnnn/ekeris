@@ -26,6 +26,9 @@ import {
 import { Input } from "antd";
 import { Record } from "../../interfaces/Record";
 
+import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
+
 type MODAL_TYPE = "DETAIL" | "ADD" | "DELETE" | "EDIT";
 
 import type { TabsProps, UploadFile, UploadProps } from "antd";
@@ -37,6 +40,9 @@ import { BiDetail } from "react-icons/bi";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { RecordsClient } from "../../services/clients/RecordsClient";
 import { useDebounce } from "../../utils/debounce";
+import { History, HistoryResponse } from "../../interfaces/History";
+import { HistoriesClient } from "../../services/clients/HistoriesClient";
+import { DAYS, MONTHS } from "../../utils/date";
 
 const { Dragger } = Upload;
 
@@ -94,6 +100,14 @@ const Home = () => {
   const openModal = (type: MODAL_TYPE, record: RecordResponse) => {
     if (type === "DETAIL" || type === "EDIT" || type === "DELETE") {
       setSelectedRecord(record);
+      setHistoryReconds(
+        record.histories.map((item) => {
+          return {
+            ...item,
+            key: item._id,
+          };
+        })
+      );
     }
 
     setModalType(type);
@@ -202,6 +216,38 @@ const Home = () => {
     },
   ];
 
+  const historyColumn: TableProps<HistoryResponse>["columns"] = [
+    {
+      title: "Peminjam",
+      dataIndex: "borrower",
+      key: "borrower",
+    },
+    {
+      title: "Waktu Peminjaman",
+      dataIndex: "exitTime",
+      key: "exitTime",
+      render: (_, history: HistoryResponse) => {
+        return <p>{history.exitTime > 0 && renderDate(history.exitTime)}</p>;
+      },
+    },
+    {
+      title: "Waktu Pengembalian",
+      dataIndex: "entryTime",
+      key: "entryTime",
+      render: (_, history: HistoryResponse) => {
+        return <p>{history.entryTime > 0 && renderDate(history.entryTime)}</p>;
+      },
+    },
+  ];
+
+  interface TableHistoryRecord extends HistoryResponse {
+    key: string;
+  }
+
+  const [historyRecords, setHistoryReconds] = useState<TableHistoryRecord[]>(
+    []
+  );
+
   interface TableRecord extends RecordResponse {
     key: string;
   }
@@ -216,12 +262,15 @@ const Home = () => {
     setSelectedRecord({ ...selectedRecord, status: value });
   };
 
-  const updateDate: DatePickerProps["onChange"] = (date, dateString) => {
-    console.log(date, dateString);
+  const [dateValue, setDateValue] = useState<Dayjs>(dayjs());
+  const [timeValue, setTimeValue] = useState<Dayjs>(dayjs());
+
+  const updateDate: DatePickerProps["onChange"] = (date) => {
+    setDateValue(date);
   };
 
-  const updateTime: TimePickerProps["onChange"] = (date, dateString) => {
-    console.log(date, dateString);
+  const updateTime: TimePickerProps["onChange"] = (date) => {
+    setTimeValue(date);
   };
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -265,20 +314,22 @@ const Home = () => {
         histories,
       };
 
-      const { error, errorMessage } = await RecordsClient.addNewRecord(body);
+      if (medical_record_number !== "") {
+        const { error, errorMessage } = await RecordsClient.addNewRecord(body);
 
-      if (error) {
-        api.error({
-          message: errorMessage,
-          placement: "top",
-          duration: 2,
-        });
-      } else {
-        api.success({
-          message: "Data berhasil ditambahkan.",
-          placement: "top",
-          duration: 2,
-        });
+        if (error) {
+          api.error({
+            message: errorMessage,
+            placement: "top",
+            duration: 2,
+          });
+        } else {
+          api.success({
+            message: "Data berhasil ditambahkan.",
+            placement: "top",
+            duration: 2,
+          });
+        }
       }
     }
 
@@ -400,10 +451,54 @@ const Home = () => {
       histories,
     };
 
-    const { error, errorMessage } = await RecordsClient.updateRecordById(
-      _id,
-      body
-    );
+    const { error, errorMessage } = await RecordsClient.updateRecordById(_id, {
+      ...body,
+    });
+
+    const index = records.findIndex((item) => item._id === selectedRecord._id);
+    if (index !== -1) {
+      if (records[index].status !== selectedRecord.status) {
+        const date = new Date(
+          dateValue.year(),
+          dateValue.month(),
+          dateValue.date(),
+          timeValue.hour(),
+          timeValue.minute(),
+          timeValue.second(),
+          timeValue.millisecond()
+        ).getTime();
+
+        if (!selectedRecord.status || selectedRecord.histories.length === 0) {
+          // Peminjaman
+          const historyBody: History = {
+            createdAt: new Date().getTime(),
+            updatedAt: new Date().getTime(),
+            exitTime: date,
+            entryTime: 0,
+            borrower: selectedRecord.borrower,
+            recordId: selectedRecord._id,
+          };
+
+          await HistoriesClient.addNewHistory(historyBody);
+        } else {
+          // Pengembalian
+          const newestHistory = records[index].histories[histories.length - 1];
+          await HistoriesClient.updateHistory(newestHistory._id, {
+            ...newestHistory,
+            entryTime: date,
+            borrower: selectedRecord.borrower,
+          });
+        }
+      } else {
+        if (records[index].borrower !== selectedRecord.borrower) {
+          const newestHistory = records[index].histories[histories.length - 1];
+          await HistoriesClient.updateHistory(newestHistory._id, {
+            ...newestHistory,
+            borrower: selectedRecord.borrower,
+          });
+        }
+      }
+    }
 
     if (error) {
       api.error({
@@ -441,6 +536,8 @@ const Home = () => {
                     style={{
                       width: "100%",
                     }}
+                    name="date"
+                    value={dateValue}
                     placeholder="Pilih Tanggal"
                     onChange={updateDate}
                   />
@@ -451,6 +548,8 @@ const Home = () => {
                     style={{
                       width: "100%",
                     }}
+                    name="time"
+                    value={timeValue}
                     placeholder="Pilih Waktu"
                     onChange={updateTime}
                   />
@@ -626,6 +725,25 @@ const Home = () => {
     },
   ];
 
+  const renderDate = (n: number) => {
+    const d = new Date(n);
+
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    const date = d.getDate();
+    const day = d.getDay();
+
+    const hour = d.getHours();
+    const minute = d.getMinutes();
+    const second = d.getSeconds();
+
+    return `${DAYS[day]}, ${date > 9 ? date : "0" + date} ${
+      MONTHS[month]
+    } ${year} ${hour > 9 ? hour : "0" + hour}:${
+      minute > 9 ? minute : "0" + minute
+    }:${second > 9 ? second : "0" + second}`;
+  };
+
   const detailTabItems: TabsProps["items"] = [
     {
       key: "1",
@@ -705,7 +823,13 @@ const Home = () => {
             gap: "1rem",
           }}
         >
-          <p>Cek</p>
+          <Table
+            bordered
+            pagination={false}
+            scroll={{ y: 300 }}
+            columns={historyColumn}
+            dataSource={historyRecords}
+          />
         </div>
       ),
     },
@@ -865,6 +989,7 @@ const Home = () => {
               <div className="desc">
                 <Input
                   name="borrower"
+                  autoComplete="off"
                   onChange={updateRecordInput}
                   value={selectedRecord.borrower}
                 />
@@ -1057,7 +1182,12 @@ const Home = () => {
             <Button key="cancel" onClick={closeModal}>
               BATAL
             </Button>,
-            <Button key="add" type="primary" onClick={submitAdd}>
+            <Button
+              key="add"
+              disabled={selectedRecord.medical_record_number === ""}
+              type="primary"
+              onClick={submitAdd}
+            >
               TAMBAH
             </Button>,
           ]}
