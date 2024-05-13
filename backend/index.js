@@ -6,7 +6,13 @@ const RecordModel = require("./models/Records");
 const HistoryModel = require("./models/Histories");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 mongoose.connect(
