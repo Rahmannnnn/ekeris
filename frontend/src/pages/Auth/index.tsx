@@ -3,11 +3,11 @@ import "./index.scss";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { Button, Input, notification } from "antd";
-import { UsersClient } from "../../services/Client";
 import { useNavigate } from "react-router-dom";
 import { LS_AUTH_KEY } from "../../constants/Base";
 import { getLocalStorage, setLocalStorage } from "../../utils/localStorage";
 import type { NotificationArgsProps } from "antd";
+import { UsersClient } from "../../services/clients/UsersClient";
 
 type NotificationPlacement = NotificationArgsProps["placement"];
 

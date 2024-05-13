@@ -1,4 +1,4 @@
-import { Service } from "./Service";
+import { Service } from "../Service";
 
 export class UsersClient {
   static async Login(body: object = {}) {
