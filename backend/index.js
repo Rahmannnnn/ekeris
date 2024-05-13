@@ -5,14 +5,15 @@ const UserModel = require("./models/Users");
 const RecordModel = require("./models/Records");
 const HistoryModel = require("./models/Histories");
 
+const corsOptions = {
+  origin: ["https://ekeris.vercel.app"],
+  methods: ["POST", "GET", "DELETE", "PUT"],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
 const app = express();
-app.use(
-  cors({
-    origin: ["https://ekeris.vercel.app"],
-    methods: ["POST", "GET", "DELETE", "PUT"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 mongoose.connect(
@@ -23,7 +24,7 @@ app.get("/", (req, res) => {
   res.json("Hello");
 });
 
-app.get("/records", (req, res) => {
+app.get("/records", cors(corsOptions), (req, res) => {
   const { page, size, keyword } = req.query;
   let { searchby } = req.query;
   if (!searchby) {
@@ -76,7 +77,7 @@ app.get("/records", (req, res) => {
   }
 });
 
-app.get("/records/:_id", (req, res) => {
+app.get("/records/:_id", cors(corsOptions), (req, res) => {
   const { _id } = req.params;
 
   RecordModel.findById(_id)
@@ -87,7 +88,7 @@ app.get("/records/:_id", (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.post("/records", async (req, res) => {
+app.post("/records", cors(corsOptions), async (req, res) => {
   const { body } = req;
   const { medical_record_number } = body;
 
@@ -114,7 +115,7 @@ app.post("/records", async (req, res) => {
   }
 });
 
-app.post("/records/bulk", async (req, res) => {
+app.post("/records/bulk", cors(corsOptions), async (req, res) => {
   // Array of record
   const { body } = req;
 
@@ -131,7 +132,7 @@ app.post("/records/bulk", async (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.put("/records/:_id", async (req, res) => {
+app.put("/records/:_id", cors(corsOptions), async (req, res) => {
   const { _id } = req.params;
 
   RecordModel.findByIdAndUpdate(
@@ -142,7 +143,7 @@ app.put("/records/:_id", async (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.delete("/records/:_id", async (req, res) => {
+app.delete("/records/:_id", cors(corsOptions), async (req, res) => {
   const { _id } = req.params;
   await RecordModel.findByIdAndDelete({ _id: _id })
     .then(async (result) => {
@@ -154,14 +155,14 @@ app.delete("/records/:_id", async (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.get("/histories", (req, res) => {
+app.get("/histories", cors(corsOptions), (req, res) => {
   HistoryModel.find()
     .populate("records")
     .then((record) => res.json(record))
     .catch((error) => res.json({ error }));
 });
 
-app.post("/histories", async (req, res) => {
+app.post("/histories", cors(corsOptions), async (req, res) => {
   const { body } = req;
   const { recordId } = body;
 
@@ -180,7 +181,7 @@ app.post("/histories", async (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.delete("/histories/:_id", async (req, res) => {
+app.delete("/histories/:_id", cors(corsOptions), async (req, res) => {
   const { _id } = req.params;
 
   await HistoryModel.findByIdAndDelete(_id)
@@ -195,7 +196,7 @@ app.delete("/histories/:_id", async (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.put("/histories/:_id", (req, res) => {
+app.put("/histories/:_id", cors(corsOptions), (req, res) => {
   const { _id } = req.params;
   HistoryModel.findByIdAndUpdate(
     { _id },
@@ -205,7 +206,7 @@ app.put("/histories/:_id", (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", cors(corsOptions), (req, res) => {
   const { username, password } = req.body;
 
   UserModel.findOne({
