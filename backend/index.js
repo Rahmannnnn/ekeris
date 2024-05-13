@@ -8,7 +8,7 @@ const HistoryModel = require("./models/Histories");
 const app = express();
 app.use(
   cors({
-    origin: ["https://ekeris-api.vercel.app"],
+    origin: ["https://ekeris-api.vercel.app/"],
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
   })
