@@ -9,14 +9,14 @@ const app = express();
 app.use(
   cors({
     origin: ["https://ekeris.vercel.app"],
-    methods: ["POST", "GET", "PUT", "DELETE"],
+    methods: ["POST", "GET", "DELETE", "PUT"],
     credentials: true,
   })
 );
 app.use(express.json());
 
 mongoose.connect(
-  "mongodb+srv://rahmannnnn:ghani123@ekeris.uv559ut.mongodb.net/ekeris"
+  "mongodb+srv://rahmannnnn:ghani123@ekeris.uv559ut.mongodb.net/ekeris?retryWrites=true&w=majority"
 );
 
 app.get("/", (req, res) => {
