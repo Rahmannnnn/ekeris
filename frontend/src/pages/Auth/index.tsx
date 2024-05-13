@@ -8,6 +8,7 @@ import { LS_AUTH_KEY } from "../../constants/Base";
 import { getLocalStorage, setLocalStorage } from "../../utils/localStorage";
 import type { NotificationArgsProps } from "antd";
 import { UsersClient } from "../../services/clients/UsersClient";
+import { RecordsClient } from "../../services/clients/RecordsClient";
 
 type NotificationPlacement = NotificationArgsProps["placement"];
 
@@ -58,7 +59,6 @@ const Auth = () => {
 
   const getLoginData = () => {
     const data = getLocalStorage(LS_AUTH_KEY);
-
     const { username } = data;
     if (username) {
       navigate("/");
@@ -68,7 +68,16 @@ const Auth = () => {
 
   useEffect(() => {
     getLoginData();
-  });
+  }, []);
+
+  const getBase = async () => {
+    const { error, errorMessage, response } = await RecordsClient.getBase();
+    console.log(error, errorMessage, response);
+  };
+
+  useEffect(() => {
+    getBase();
+  }, []);
 
   const [showPassword, setShowPassword] = useState(false);
   return (

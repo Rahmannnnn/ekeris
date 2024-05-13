@@ -50,4 +50,12 @@ export class RecordsClient {
 
     return { error, errorMessage, response };
   }
+
+  static async getBase() {
+    const { error, errorMessage, response } = await Service.get(
+      `${import.meta.env.VITE_API_KEY}`
+    );
+
+    return { error, errorMessage, response };
+  }
 }
