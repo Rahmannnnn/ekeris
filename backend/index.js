@@ -5,21 +5,9 @@ const UserModel = require("./models/Users");
 const RecordModel = require("./models/Records");
 const HistoryModel = require("./models/Histories");
 
-const corsOptions = {
-  origin: ["https://ekeris.vercel.app"],
-  methods: ["POST", "GET", "DELETE", "PUT"],
-  credentials: true,
-  optionsSuccessStatus: 200,
-};
-
 const app = express();
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
-
 app.use(express.json());
+app.use(cors());
 
 mongoose.connect(
   "mongodb+srv://rahmannnnn:ghani123@ekeris.uv559ut.mongodb.net/ekeris?retryWrites=true&w=majority"
