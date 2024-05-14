@@ -1303,7 +1303,10 @@ const Home = () => {
               </p>
             </div>
             <div className="modal__upload__item">
-              <p>2. Isi file template dengan keterangan sebagai berikut:</p>
+              <p>
+                2. Isi file template dengan keterangan sebagai berikut (maksimal
+                300 data):
+              </p>
               <div className="desc">
                 <div className="desc__item">
                   <span>medical_record_number</span> Nomor Rekam Medis

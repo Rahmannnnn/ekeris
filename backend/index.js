@@ -42,7 +42,9 @@ app.get("/records", (req, res) => {
 
   if (!page && !size && keyword) {
     RecordModel.find({
-      [searchby]: { $regex: new RegExp("^" + keyword.toLowerCase(), "i") },
+      [searchby]: {
+        $regex: new RegExp("/" + keyword.toLowerCase() + "/", "i"),
+      },
     })
       .populate("histories")
       .then((record) => {
@@ -66,7 +68,9 @@ app.get("/records", (req, res) => {
 
     RecordModel.paginate(
       {
-        [searchby]: { $regex: new RegExp("^" + keyword.toLowerCase(), "i") },
+        [searchby]: {
+          $regex: new RegExp("/" + keyword.toLowerCase() + "/", "i"),
+        },
       },
       { offset, limit: size, populate: "histories" }
     )
