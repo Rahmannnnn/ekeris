@@ -6,12 +6,14 @@ const RecordModel = require("./models/Records");
 const HistoryModel = require("./models/Histories");
 
 const app = express();
+app.use(
+  cors({
+    origin: ["https://ekeris.vercel.app"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
-var corsOptions = {
-  origin: "*",
-};
-
-app.use(cors(corsOptions));
 app.use(express.json());
 
 mongoose.connect(
@@ -20,11 +22,6 @@ mongoose.connect(
 
 app.get("/", (req, res) => {
   res.json("Hello");
-});
-
-app.get("/cek", (req, res) => {
-  const { page } = req.query;
-  res.json(page);
 });
 
 app.get("/records", (req, res) => {
