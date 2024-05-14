@@ -11,8 +11,8 @@ var corsOptions = {
   origin: "*",
 };
 
-app.use(express.json());
 app.use(cors(corsOptions));
+app.use(express.json());
 
 mongoose.connect(
   "mongodb+srv://rahmannnnn:ghani123@ekeris.uv559ut.mongodb.net/ekeris?retryWrites=true&w=majority"
