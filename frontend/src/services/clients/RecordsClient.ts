@@ -6,7 +6,7 @@ const BASE = "records";
 export class RecordsClient {
   static async getAllRecords(params: object = {}) {
     const { error, errorMessage, response } = await Service.get(
-      `${import.meta.env.VITE_API_KEY}/${BASE}`,
+      `${import.meta.env.VITE_API_KEY}${BASE}`,
       params
     );
 
@@ -19,7 +19,7 @@ export class RecordsClient {
 
   static async addNewRecord(body: Record) {
     const { error, errorMessage, response } = await Service.post(
-      `${import.meta.env.VITE_API_KEY}/${BASE}`,
+      `${import.meta.env.VITE_API_KEY}${BASE}`,
       body
     );
 
@@ -27,7 +27,7 @@ export class RecordsClient {
   }
   static async addBulkNewRecord(body: Record[]) {
     const { error, errorMessage, response } = await Service.post(
-      `${import.meta.env.VITE_API_KEY}/${BASE}/bulk`,
+      `${import.meta.env.VITE_API_KEY}${BASE}/bulk`,
       body
     );
 
@@ -36,7 +36,7 @@ export class RecordsClient {
 
   static async updateRecordById(id: string, body: Record) {
     const { error, errorMessage, response } = await Service.put(
-      `${import.meta.env.VITE_API_KEY}/${BASE}/${id}`,
+      `${import.meta.env.VITE_API_KEY}${BASE}/${id}`,
       body
     );
 
@@ -45,7 +45,7 @@ export class RecordsClient {
 
   static async deleteRecordById(id: string) {
     const { error, errorMessage, response } = await Service.delete(
-      `${import.meta.env.VITE_API_KEY}/${BASE}/${id}`
+      `${import.meta.env.VITE_API_KEY}${BASE}/${id}`
     );
 
     return { error, errorMessage, response };

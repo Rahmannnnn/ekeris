@@ -5,7 +5,7 @@ const BASE = "histories";
 export class HistoriesClient {
   static async addNewHistory(body: History) {
     const { error, errorMessage, response } = await Service.post(
-      `${import.meta.env.VITE_API_KEY}/${BASE}`,
+      `${import.meta.env.VITE_API_KEY}${BASE}`,
       body
     );
 
@@ -14,7 +14,7 @@ export class HistoriesClient {
 
   static async updateHistory(id: string, body: History) {
     const { error, errorMessage, response } = await Service.put(
-      `${import.meta.env.VITE_API_KEY}/${BASE}/${id}`,
+      `${import.meta.env.VITE_API_KEY}${BASE}/${id}`,
       body
     );
 
