@@ -8,8 +8,8 @@ const HistoryModel = require("./models/Histories");
 const app = express();
 
 var corsOptions = {
-  // Ganti domain ini
-  origin: "https://ekeris.vercel.app",
+  origin: "*",
+  credentials: false,
 };
 
 app.use(cors(corsOptions));
