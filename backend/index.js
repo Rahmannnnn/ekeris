@@ -24,6 +24,11 @@ app.get("/", (req, res) => {
   res.json("Hello");
 });
 
+app.get("/cek", (req, res) => {
+  const { page } = req.query;
+  res.json(page);
+});
+
 app.get("/records", (req, res) => {
   const { page, size, keyword } = req.query;
   let { searchby } = req.query;
