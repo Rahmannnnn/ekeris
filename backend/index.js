@@ -211,7 +211,7 @@ app.put("/histories/:_id", (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", cors(corsOptions), (req, res) => {
   const { username, password } = req.body;
 
   UserModel.findOne({
