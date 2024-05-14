@@ -8,7 +8,7 @@ const HistoryModel = require("./models/Histories");
 const app = express();
 
 var corsOptions = {
-  origin: "https://ekeris.vercel.app/",
+  origin: "*",
 };
 
 app.use(cors(corsOptions));
@@ -210,7 +210,7 @@ app.put("/histories/:_id", (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
-app.post("/login", cors(corsOptions), (req, res) => {
+app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   UserModel.findOne({
