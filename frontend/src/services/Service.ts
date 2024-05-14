@@ -3,7 +3,6 @@ import axios from "axios";
 export class Service {
   static async get(url: string, params: object = {}, additionalHeader = {}) {
     try {
-      axios.defaults.withCredentials = true;
       const res = await axios.get(url, {
         params,
         headers: {
@@ -50,7 +49,6 @@ export class Service {
     additionalHeader: object = {}
   ) {
     try {
-      axios.defaults.withCredentials = true;
       const res = await axios.post(url, body, {
         headers: {
           "content-type": "application/json",
@@ -96,7 +94,6 @@ export class Service {
     additionalHeader: object = {}
   ) {
     try {
-      axios.defaults.withCredentials = true;
       const res = await axios.delete(url, {
         data: body,
         headers: {
@@ -142,7 +139,6 @@ export class Service {
     additionalHeader: object = {}
   ) {
     try {
-      axios.defaults.withCredentials = true;
       const res = await axios.put(url, body, {
         headers: {
           "content-type": "application/json",
@@ -188,7 +184,6 @@ export class Service {
     additionalHeader: object = {}
   ) {
     try {
-      axios.defaults.withCredentials = true;
       const res = await axios.patch(url, body, {
         headers: {
           "content-type": "application/json",
