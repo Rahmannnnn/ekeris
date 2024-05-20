@@ -30,6 +30,14 @@
       font-family: globals.$font-family-logo;
     }
 
+    .logo {
+      img {
+        width: 100%;
+        max-width: 150px;
+        height: 100%;
+      }
+    }
+
     &__action {
       padding: 1rem;
       font-size: 1.2rem;

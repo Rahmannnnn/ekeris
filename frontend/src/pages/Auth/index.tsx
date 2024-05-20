@@ -8,6 +8,8 @@ import { LS_AUTH_KEY } from "../../constants/Base";
 import { getLocalStorage, setLocalStorage } from "../../utils/localStorage";
 import type { NotificationArgsProps } from "antd";
 import { UsersClient } from "../../services/clients/UsersClient";
+import logo from "../../assets/images/logo.png";
+import ekerisText from "../../assets/images/ekeris-text.png";
 
 type NotificationPlacement = NotificationArgsProps["placement"];
 
@@ -67,6 +69,7 @@ const Auth = () => {
 
   useEffect(() => {
     getLoginData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -75,7 +78,11 @@ const Auth = () => {
       {contextHolder}
       <div className="login">
         <div className="login__form">
-          <h1>e-KERIS</h1>
+          <div className="login__form__logo">
+            <img className="logo" src={logo} alt="Logo" />
+            <img className="text" src={ekerisText} alt="text" />
+          </div>
+
           <form
             onSubmit={(event) => {
               event.preventDefault();

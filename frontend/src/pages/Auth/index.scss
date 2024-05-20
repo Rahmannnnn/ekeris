@@ -24,6 +24,31 @@
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
       rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    display: flex;
+    flex-direction: column;
+
+    &__logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      flex-direction: column;
+
+      .logo {
+        width: 100%;
+        height: auto;
+        max-width: 150px;
+        margin: 0 auto;
+        position: absolute;
+        top: 0;
+      }
+
+      .text {
+        margin-top: 8rem;
+        background-color: blueviolet;
+        height: 200px;
+      }
+    }
 
     form {
       display: flex;

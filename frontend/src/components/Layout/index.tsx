@@ -4,6 +4,7 @@ import { ReactNode, useState } from "react";
 import { deleteLocalStorage } from "../../utils/localStorage";
 import { LS_AUTH_KEY } from "../../constants/Base";
 import { useNavigate } from "react-router-dom";
+import ekerisLogo from "../../assets/images/ekeris-logo.png";
 
 interface LayoutProps {
   children: ReactNode;
@@ -22,7 +23,9 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="layout">
       <div className="layout__navbar">
         <div className="layout__navbar__container">
-          <h1>e-KERIS</h1>
+          <div className="logo">
+            <img className="text" src={ekerisLogo} alt="text" />
+          </div>
           <div className="layout__navbar__action">
             <Button onClick={() => setShowModal(true)}>KELUAR</Button>
           </div>
