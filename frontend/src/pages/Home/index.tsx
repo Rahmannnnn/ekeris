@@ -1034,7 +1034,7 @@ const Home = () => {
     getAllRecords();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, searchby, debounce]);
+  }, [size, page, searchby, debounce]);
 
   const onSearch = async () => {
     await getAllRecords();
