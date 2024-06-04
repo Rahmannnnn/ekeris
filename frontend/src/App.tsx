@@ -28,7 +28,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Auth />} />
+            <Route path="/login" element={<Auth type="LOGIN" />} />
+            <Route path="/register" element={<Auth type="REGISTER" />} />
 
             {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />

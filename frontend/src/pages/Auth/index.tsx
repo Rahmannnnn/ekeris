@@ -10,10 +10,17 @@ import type { NotificationArgsProps } from "antd";
 import { UsersClient } from "../../services/clients/UsersClient";
 import logo from "../../assets/images/logo.png";
 import ekerisText from "../../assets/images/ekeris-text.png";
+import runes from "runes2";
 
 type NotificationPlacement = NotificationArgsProps["placement"];
 
-const Auth = () => {
+type AUTH_TYPE = "LOGIN" | "REGISTER";
+interface Props {
+  type: AUTH_TYPE;
+}
+
+const Auth = ({ type }: Props) => {
+  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,8 +38,11 @@ const Auth = () => {
   const updateInput = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     switch (name) {
+      case "name":
+        setName(value);
+        break;
       case "username":
-        setUsername(value);
+        setUsername(value.replace(/ /g, ""));
         break;
       case "password":
         setPassword(value);
@@ -44,6 +54,25 @@ const Auth = () => {
     if (!username || !password) return;
 
     const { error, errorMessage, response } = await UsersClient.Login({
+      username,
+      password,
+    });
+
+    if (!error) {
+      setLocalStorage(LS_AUTH_KEY, response);
+      navigate("/");
+    }
+
+    if (error) {
+      loginFailed(errorMessage, "top");
+    }
+  };
+
+  const submitRegister = async () => {
+    if (!name || !username || !password) return;
+
+    const { error, errorMessage, response } = await UsersClient.Register({
+      name,
       username,
       password,
     });
@@ -86,12 +115,38 @@ const Auth = () => {
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              submitLogin();
+              if (type === "LOGIN") {
+                submitLogin();
+              }
+
+              if (type === "REGISTER") {
+                submitRegister();
+              }
             }}
           >
+            {type === "REGISTER" && (
+              <div className="input">
+                <label htmlFor="name">Nama</label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={updateInput}
+                  autoComplete="off"
+                  suffix={" "}
+                />
+              </div>
+            )}
             <div className="input">
               <label htmlFor="username">Username</label>
               <Input
+                count={{
+                  show: true,
+                  max: 20,
+                  strategy: (txt) => runes(txt).length,
+                  exceedFormatter: (txt, { max }) =>
+                    runes(txt).slice(0, max).join(""),
+                }}
                 id="username"
                 name="username"
                 value={username}
@@ -101,7 +156,7 @@ const Auth = () => {
               />
             </div>
             <div className="input">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Kata Sandi</label>
               <Input
                 id="password"
                 name="password"
@@ -117,9 +172,27 @@ const Auth = () => {
                 }
               />
             </div>
-            <Button type="primary" htmlType="submit">
-              LOGIN
-            </Button>
+            {type === "LOGIN" && (
+              <>
+                <Button type="primary" htmlType="submit">
+                  MASUK
+                </Button>
+                <p className="register__button">
+                  Belum punya akun? <a href="/register">Daftar</a>
+                </p>
+              </>
+            )}
+
+            {type === "REGISTER" && (
+              <>
+                <Button type="primary" htmlType="submit">
+                  DAFTAR
+                </Button>
+                <p className="register__button">
+                  Sudah punya akun? <a href="/login">Masuk</a>
+                </p>
+              </>
+            )}
           </form>
         </div>
       </div>

@@ -33,8 +33,12 @@
     .logo {
       img {
         width: 100%;
-        max-width: 150px;
+        max-width: 100px;
         height: 100%;
+
+        @include breakpoints.size(m) {
+          max-width: 150px;
+        }
       }
     }
 
@@ -42,13 +46,44 @@
       padding: 1rem;
       font-size: 1.2rem;
       border-radius: 0.5rem;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      button {
+        cursor: pointer;
+      }
     }
   }
 
   &__content {
     width: 100%;
     max-width: 1080px;
+  }
+}
+
+.modal {
+  &__edit,
+  &__password {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 0;
+
+    &__row {
+      display: flex;
+      align-items: center;
+
+      .title {
+        flex: 1;
+        font-weight: bold;
+      }
+
+      .desc {
+        width: 100%;
+        flex: 2;
+      }
+    }
   }
 }
 

@@ -208,6 +208,108 @@ app.put("/histories/:_id", (req, res) => {
     .catch((error) => res.json({ error: error }));
 });
 
+app.put("/users/detail/:username", async (req, res) => {
+  const { username } = req.params;
+  const { name: newName, username: newUsername, password } = req.body;
+
+  // check username, if password same, change username and name
+  let found = false;
+  await UserModel.findOne({
+    username: username,
+  })
+    .then((user) => {
+      if (user) {
+        if (user.password === password) {
+          found = true;
+        } else {
+          res.status(403).json({
+            error: "Password yang anda masukkan salah.",
+          });
+        }
+      } else {
+        res.status(403).json({
+          error: "Pengguna tidak ditemukan.",
+        });
+      }
+    })
+    .catch((error) => res.json({ error: error }));
+
+  let isEquals = true;
+  if (found) {
+    await UserModel.findOne({ username: newUsername }).then((user) => {
+      if (user) {
+        if (username === newUsername) {
+          isEquals = false;
+        } else {
+          res.status(403).json({
+            error: "Username sudah digunakan oleh orang lain.",
+          });
+        }
+      } else {
+        isEquals = false;
+      }
+    });
+  }
+
+  if (!isEquals) {
+    await UserModel.findOneAndUpdate(
+      { username },
+      { name: newName, username: newUsername, updatedAt: new Date().getTime() }
+    )
+      .then(() => res.json({ name: newName, username: newUsername }))
+      .catch((error) => res.json({ error: error }));
+  }
+});
+
+app.put("/users/password/:username", async (req, res) => {
+  const { username } = req.params;
+  const { oldPassword, newPassword } = req.body;
+  console.log(oldPassword, newPassword);
+
+  let found = false;
+  await UserModel.findOne({ username: username })
+    .then(async (user) => {
+      if (user.password === oldPassword) {
+        found = true;
+      } else {
+        res.status(403).json({
+          error: "Password yang anda masukkan salah.",
+        });
+      }
+    })
+    .catch((error) => res.json({ error: error }));
+
+  if (found) {
+    await UserModel.findOneAndUpdate(
+      { username },
+      { password: newPassword, updatedAt: new Date().getTime() }
+    )
+      .then((result) => res.json(result))
+      .catch((error) => res.json({ error: error }));
+  }
+});
+
+app.get("/users/:username", (req, res) => {
+  const { username } = req.params;
+
+  UserModel.findOne({
+    username: username,
+  })
+    .then((user) => {
+      if (user) {
+        res.json({
+          name: user.name,
+          username: user.username,
+        });
+      } else {
+        res.status(403).json({
+          error: "Pengguna tidak ditemukan.",
+        });
+      }
+    })
+    .catch((error) => res.json({ error: error }));
+});
+
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -217,6 +319,7 @@ app.post("/login", (req, res) => {
     if (user) {
       if (user.password === password) {
         res.json({
+          name: user.name,
           username,
         });
       } else {
@@ -227,6 +330,33 @@ app.post("/login", (req, res) => {
       }
     } else {
       res.status(403).json({ error: "Username tidak ditemukan." });
+    }
+  });
+});
+
+app.post("/register", async (req, res) => {
+  const { name, username, password } = req.body;
+
+  await UserModel.findOne({
+    username: username,
+  }).then(async (user) => {
+    if (user) {
+      res.status(403).json({
+        error: "Maaf, username sudah digunakan. Silakan gunakan username lain.",
+      });
+    } else {
+      await UserModel.create({
+        ...{ name, username, password },
+        createdAt: new Date().getTime(),
+        updatedAt: new Date().getTime(),
+      })
+        .then(() =>
+          res.json({
+            name,
+            username,
+          })
+        )
+        .catch((error) => res.json({ error: error }));
     }
   });
 });
