@@ -1028,15 +1028,16 @@ const Home = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [size]);
+  }, [size, debounce, searchby]);
 
   useEffect(() => {
     getAllRecords();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, page, searchby, debounce]);
+  }, [page, size, debounce, searchby]);
 
   const onSearch = async () => {
+    setPage(1);
     await getAllRecords();
   };
 
